@@ -479,7 +479,7 @@ The "overall health score" in the designs is **not** produced by this model. If 
 | `outputs/model_metadata_v2.json` | metrics, sklearn version, split info |
 | `outputs/test_predictions_v2.csv` | per-row test predictions (useful as fixtures for app tests) |
 | `astronaut_health_dataset_v2.csv` | training data and the source for replay mode |
-| `README.md`, `schema.sql` | full results analysis and database schema |
+| `README.md`| full results analysis |
 
 ---
 
