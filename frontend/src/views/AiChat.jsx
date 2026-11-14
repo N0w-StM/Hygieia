@@ -11,17 +11,18 @@ function answer(q, rec) {
   const s = rec.astronaut_summary;
   const flagged = rec.systems.filter((x) => x.level > 0).map((x) => `${x.name} (${UI[x.level]})`);
   const t = q.toLowerCase();
+  // Order matters: "how am I doing" contains "do", so status questions are matched first.
   if (t.includes('sleep')) return `Your last sleep period was ${rec.systems.find((x) => x.key === 'brain').metric.value}.`;
-  if (t.includes('do') || t.includes('action') || t.includes('next')) {
-    return s.next_action ? s.next_action.text : 'No action needed. Continue your planned routine.';
+  if (t.includes('how am i') || t.includes('okay') || t.includes('doing') || t.includes('status today')) {
+    return `${s.title}. ${s.body}`;
   }
   if (t.includes('why') || t.includes('flag') || t.includes('watch') || t.includes('critical')) {
     return flagged.length
       ? `These were flagged for review on your latest reading: ${flagged.join(', ')}. ${s.next_action ? s.next_action.text : ''}`
       : 'Nothing is flagged on your latest reading.';
   }
-  if (t.includes('how am i') || t.includes('okay') || t.includes('status') || t.includes('doing')) {
-    return `${s.title}. ${s.body}`;
+  if (t.includes('what should') || t.includes('do now') || t.includes('action') || t.includes('next')) {
+    return s.next_action ? s.next_action.text : 'No action needed. Continue your planned routine.';
   }
   return 'I only have a few fixed answers in this demo. Try one of the suggested questions, or message your medical officer.';
 }
