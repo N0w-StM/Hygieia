@@ -388,9 +388,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 yield f"event: hello\ndata: {json.dumps(hello)}\n\n"
                 while True:
                     try:
-                        ev = await asyncio.wait_for(q.get(), timeout=15)
+                        ev = await asyncio.wait_for(q.get(), timeout=10)
                     except asyncio.TimeoutError:
-                        yield ": keepalive\n\n"
+                        # A real event, not an SSE comment: the page uses it as a heartbeat to
+                        # detect a dead stream (comments never reach EventSource listeners).
+                        yield f"event: ping\ndata: {json.dumps({'server_time': utcnow()})}\n\n"
                         continue
                     ev = visible(ev)
                     if ev:
