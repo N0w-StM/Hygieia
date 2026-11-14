@@ -8,4 +8,4 @@
 
 - Model Alert (when model detect anomalies, it sends an alert to doctor's view and astronaut's view)
 
-- Notifications feature (for Doctor when astronaut or model sends alert)
+- Notifications feature (for Doctor when astronaut or model sends alert, for Astronaut when model sends alert)
