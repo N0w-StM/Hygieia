@@ -13,9 +13,11 @@ export default function CrewOverview({ go }) {
   const rows = crew.map((c) => ({ c, r: records[c.astronaut_id] })).filter((x) => x.r)
     .sort((a, b) => b.r.overall.level - a.r.overall.level || a.c.astronaut_id.localeCompare(b.c.astronaut_id));
   const counts = [2, 1, 0].map((l) => rows.filter((x) => x.r.overall.level === l).length);
-  const open = alerts.filter(needsAck);
+  // Priority: still active first, then Critical and help requests, then Watch; newest first within each.
+  const rank = (a) => (a.status === 'active' ? 10 : 0) + (a.level === 'RED' || a.source === 'astronaut' ? 2 : a.level === 'ORANGE' ? 1 : 0);
+  const open = alerts.filter(needsAck).sort((x, y) => rank(y) - rank(x) || (x.triggered_at < y.triggered_at ? 1 : -1));
   const first = rows[0]?.r;
-  const phone = useMediaQuery((t) => t.breakpoints.down('sm'));
+  const phone = useMediaQuery((t) => t.breakpoints.down('md')); // cards below 900px: the 13-column table needs a wide screen
 
   return (
     <Stack spacing={3}>
