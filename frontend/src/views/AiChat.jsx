@@ -51,7 +51,7 @@ export default function AiChat({ id, go }) {
         <Card sx={(t) => ({ borderColor: t.hy.critical })}>
           <Box sx={{ p: 2.5 }} role="alert">
             <StatusBadge level={2} />
-            <Typography sx={{ mt: 1 }}>Your status is Critical. Contact your flight surgeon now. Don't wait for a chat reply.</Typography>
+            <Typography sx={{ mt: 1 }}>Your status is Critical. Contact your flight surgeon now. Don’t wait for a chat reply.</Typography>
             <Button variant="contained" color="error" sx={{ mt: 1.5 }} onClick={() => go('contact')}>Contact flight surgeon</Button>
           </Box>
         </Card>
@@ -61,7 +61,7 @@ export default function AiChat({ id, go }) {
         {log.length === 0 && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="h4">What would help you today?</Typography>
-            <Typography variant="body2" color="text.secondary">Ask about how you're doing or what to do next.</Typography>
+            <Typography variant="body2" color="text.secondary">Ask about how you’re doing or what to do next.</Typography>
           </Box>
         )}
         <Stack spacing={2} aria-live="polite" sx={{ mb: log.length ? 2 : 0 }}>

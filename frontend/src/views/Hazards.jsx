@@ -27,7 +27,7 @@ export default function Hazards({ id, view }) {
   return (
     <Stack spacing={3}>
       <Box>
-        <Overline>NASA's five hazards of human spaceflight</Overline>
+        <Overline>NASA’s five hazards of human spaceflight</Overline>
         <Typography variant="h1">{view === 'doctor' ? `${nameOf(id)}: hazard status` : 'Your five hazards'}</Typography>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', mt: 1, flexWrap: 'wrap', rowGap: 1 }}>
           <StatusBadge level={data.overall.level} suffix="overall" />
@@ -92,7 +92,7 @@ export default function Hazards({ id, view }) {
         ))}
       </Box>
       <Typography variant="caption" color="text.secondary">
-        Each status is the model's reading of one 6-hour health snapshot. A Watch or Critical status means "flagged for review".
+        Each status is the model’s reading of one 6-hour health snapshot. A Watch or Critical status means “flagged for review”.
       </Typography>
     </Stack>
   );

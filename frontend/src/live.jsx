@@ -54,7 +54,7 @@ export function LiveProvider({ role, astronautId, children }) {
       api.get('/alerts', { audience, astronaut_id: role === 'astronaut' ? astronautId : null, limit: 200 }),
       api.get('/replay'),
     ]);
-    setCrew(c.crew.map(({ latest, ...rest }) => rest));
+    setCrew(c.crew.map((member) => { const profile = { ...member }; delete profile.latest; return profile; })); // records are kept separately
     setDoctor(c.doctor);
     setRecords(Object.fromEntries(c.crew.filter((x) => x.latest).map((x) => [x.astronaut_id, x.latest])));
     setStorage(c.storage);
