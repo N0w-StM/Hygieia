@@ -45,6 +45,7 @@ export default function BodyPreview({ id, go }) {
                 return (
                   <g key={s.key} tabIndex={0} role="button" aria-pressed={on} aria-label={`${s.name}: ${UI[s.level]}`} style={{ cursor: 'pointer', outline: 'none' }}
                     onClick={() => setSel(s.key)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSel(s.key); } }}>
+                    <title>{`${s.name}: ${UI[s.level]}`}</title>
                     <circle cx={x} cy={y} r={on ? 17 : 14} fill={hy.surface} stroke={c} strokeWidth={on ? 3.5 : 2} />
                     <g transform={`translate(${x - 9} ${y - 9})`} style={{ color: c }}><LevelIcon level={s.level} size={18} color={c} /></g>
                   </g>

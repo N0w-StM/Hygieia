@@ -63,6 +63,8 @@ export function buildTheme(key) {
     },
     components: {
       MuiCssBaseline: { styleOverrides: { body: { backgroundColor: t.bg }, '@media print': { '.no-print': { display: 'none !important' } } } },
+      // flex gap instead of child margins, so wrapped rows do not get a stray left indent
+      MuiStack: { defaultProps: { useFlexGap: true } },
       MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
       MuiCard: {
         defaultProps: { elevation: 0 },

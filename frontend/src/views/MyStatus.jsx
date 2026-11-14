@@ -29,7 +29,7 @@ export default function MyStatus({ id, go }) {
 
       <Card>
         <CardContent sx={{ p: 3 }}>
-          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
             <StatusBadge level={sum.level} />
             <DataAge scoredAt={rec.scored_at} />
           </Stack>

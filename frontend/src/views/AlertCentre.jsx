@@ -19,7 +19,7 @@ export function AlertRow({ alert: a, now, compact = false, canAck = false, go })
     finally { setBusy(false); }
   };
   return (
-    <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: { xs: 'wrap', sm: 'nowrap' }, opacity: a.status === 'cleared' ? 0.8 : 1 }}>
+    <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'flex-start', flexDirection: { xs: 'column', sm: 'row' }, opacity: a.status === 'cleared' ? 0.8 : 1 }}>
       <Box sx={{ flex: 1, minWidth: 0 }}>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap', rowGap: 0.5, mb: 0.5 }}>
         {level != null ? <StatusBadge level={level} size="small" /> : <Chip size="small" label="Help requested" color="error" variant="outlined" />}

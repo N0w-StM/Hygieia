@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, ButtonBase, Card, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery } from '@mui/material';
 import { useLive, useNow } from '../live.jsx';
 import { DataAge, Overline, StatusBadge, needsAck } from '../components/status.jsx';
 import { AlertRow } from './AlertCentre.jsx';
@@ -15,6 +15,7 @@ export default function CrewOverview({ go }) {
   const counts = [2, 1, 0].map((l) => rows.filter((x) => x.r.overall.level === l).length);
   const open = alerts.filter(needsAck);
   const first = rows[0]?.r;
+  const phone = useMediaQuery((t) => t.breakpoints.down('sm'));
 
   return (
     <Stack spacing={3}>
@@ -27,6 +28,36 @@ export default function CrewOverview({ go }) {
         </Stack>
       </Box>
 
+      {phone ? (
+        <Stack spacing={1.5} component="ul" aria-label="Crew triage list" sx={{ listStyle: 'none', m: 0, p: 0 }}>
+          {rows.map(({ c, r }) => {
+            const flagged = HZ.filter(([k]) => r.hazards[k].level > 0);
+            const toAck = alerts.filter((a) => a.astronaut_id === c.astronaut_id && needsAck(a)).length;
+            return (
+              <Card component="li" key={c.astronaut_id}>
+                <ButtonBase onClick={() => go('detail', c.astronaut_id)} sx={{ display: 'block', width: '100%', textAlign: 'left', p: 2 }}>
+                  <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="subtitle2">{c.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">{c.role}</Typography>
+                    </Box>
+                    <StatusBadge level={r.overall.level} size="small" />
+                  </Stack>
+                  <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1.5, mt: 1 }}>
+                    {flagged.length === 0
+                      ? <Typography variant="body2" color="text.secondary">All five hazards Normal</Typography>
+                      : flagged.map(([k, l]) => <StatusBadge key={k} level={r.hazards[k].level} size="small" plain suffix={`· ${l}`} />)}
+                    {r.rules.heart.level > 0 && <StatusBadge level={r.rules.heart.level} size="small" plain suffix="· Heart rule" />}
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                    HR {Math.round(r.vitals.heart_rate)} bpm · SpO₂ {r.vitals.spo2.toFixed(1)}% · Sleep {r.vitals.sleep_hours.toFixed(1)} h{toAck ? ` · ${toAck} to acknowledge` : ''}
+                  </Typography>
+                </ButtonBase>
+              </Card>
+            );
+          })}
+        </Stack>
+      ) : (
       <Card>
         <TableContainer>
           <Table size="small" aria-label="Crew triage matrix" sx={{ '& td, & th': { whiteSpace: 'nowrap' } }}>
@@ -66,6 +97,7 @@ export default function CrewOverview({ go }) {
           </Table>
         </TableContainer>
       </Card>
+      )}
       <Typography variant="caption" color="text.secondary">
         Select a row for detail. Overall = worst of the five hazards. Hazard columns are model outputs for the latest 6-hour reading; Heart rule is a protocol check on HR, HRV and blood pressure. "Flagged for review", not a diagnosis.
       </Typography>
