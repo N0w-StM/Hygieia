@@ -1,0 +1,62 @@
+{
+  "radiation": {
+    "ORANGE": [
+      "Monitor space weather forecasts",
+      "Prepare storm shelter access",
+      "Review EVA schedule"
+    ],
+    "RED": [
+      "IMMEDIATE: Enter storm shelter",
+      "Cancel/abort EVA operations",
+      "Contact SRAG for dose assessment"
+    ]
+  },
+  "gravity": {
+    "ORANGE": [
+      "Increase ARED exercise sessions",
+      "Review calcium/vitamin D intake",
+      "Schedule OCT vision check"
+    ],
+    "RED": [
+      "Medical evaluation required",
+      "Restrict physical activity if VO2max critical",
+      "Urgent SANS assessment"
+    ]
+  },
+  "isolation": {
+    "ORANGE": [
+      "Enforce 7+ hour sleep schedule",
+      "Schedule crew social activity",
+      "Review workload distribution"
+    ],
+    "RED": [
+      "Mandatory rest period",
+      "Private psychological consultation",
+      "Defer safety-critical tasks"
+    ]
+  },
+  "distance": {
+    "ORANGE": [
+      "Prepare autonomous medical protocols",
+      "Verify onboard diagnostic equipment",
+      "Queue telemetry for ground review"
+    ],
+    "RED": [
+      "Execute EIMO autonomous care",
+      "Activate CDSS decision support",
+      "Log all interventions for delayed uplink"
+    ]
+  },
+  "environment": {
+    "ORANGE": [
+      "Check CDRA CO2 scrubber status",
+      "Increase ventilation in sleep quarters",
+      "Monitor SpO2 closely"
+    ],
+    "RED": [
+      "Verify dual-bed CDRA operation",
+      "Administer supplemental O2 if needed",
+      "Emergency ECLSS inspection"
+    ]
+  }
+}

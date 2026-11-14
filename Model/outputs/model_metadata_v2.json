@@ -1,0 +1,175 @@
+{
+  "created": "2026-11-14T15:40:51",
+  "sklearn_version": "1.7.1",
+  "dataset": "astronaut_health_dataset_v2.csv",
+  "n_rows": 26280,
+  "n_features": 47,
+  "feature_columns": [
+    "heart_rate",
+    "hrv_rmssd",
+    "sbp",
+    "dbp",
+    "core_temp",
+    "spo2",
+    "sleep_hours",
+    "mood_score",
+    "pvt_reaction_ms",
+    "fluid_intake_ml",
+    "co2_mmhg",
+    "radiation_msv",
+    "sans_trt_um",
+    "vo2max",
+    "hazard_radiation",
+    "hazard_gravity",
+    "hazard_isolation",
+    "hazard_distance",
+    "hazard_environment",
+    "hr_deviation",
+    "hrv_deviation",
+    "sbp_deviation",
+    "dbp_deviation",
+    "spo2_deviation",
+    "heart_rate_7d_mean",
+    "hrv_rmssd_7d_mean",
+    "sbp_7d_mean",
+    "dbp_7d_mean",
+    "core_temp_7d_mean",
+    "spo2_7d_mean",
+    "sleep_hours_7d_mean",
+    "mood_score_7d_mean",
+    "pvt_reaction_ms_7d_mean",
+    "heart_rate_7d_std",
+    "hrv_rmssd_7d_std",
+    "sbp_7d_std",
+    "dbp_7d_std",
+    "core_temp_7d_std",
+    "spo2_7d_std",
+    "sleep_hours_7d_std",
+    "mood_score_7d_std",
+    "pvt_reaction_ms_7d_std",
+    "radiation_risk",
+    "gravity_risk",
+    "isolation_risk",
+    "environment_risk",
+    "mission_day"
+  ],
+  "split_day": 876,
+  "mission_days": 1095,
+  "n_train": 21024,
+  "n_test": 5256,
+  "status_labels": [
+    "GREEN",
+    "ORANGE",
+    "RED"
+  ],
+  "hazard_names": [
+    "radiation",
+    "gravity",
+    "isolation",
+    "distance",
+    "environment"
+  ],
+  "overall_metrics": {
+    "train_accuracy": 1.0,
+    "test_accuracy": 0.9311263318112634,
+    "balanced_accuracy": 0.619663310868902,
+    "macro_f1": 0.3709719159030436,
+    "weighted_f1": 0.9492984449963926,
+    "red_recall": NaN,
+    "red_precision": 0.0,
+    "red_missed_as_green": 0,
+    "red_total_test": 0
+  },
+  "hazard_metrics": [
+    {
+      "hazard": "Radiation",
+      "accuracy": 1.0,
+      "weighted_f1": 1.0,
+      "macro_f1": 1.0,
+      "red_recall": NaN,
+      "orange_recall": NaN,
+      "n_red_test": 0
+    },
+    {
+      "hazard": "Gravity",
+      "accuracy": 0.9923896499238964,
+      "weighted_f1": 0.9935224481982613,
+      "macro_f1": 0.7480828220858895,
+      "red_recall": NaN,
+      "orange_recall": 0.7142857142857143,
+      "n_red_test": 0
+    },
+    {
+      "hazard": "Isolation",
+      "accuracy": 0.9735540334855404,
+      "weighted_f1": 0.9779327377224548,
+      "macro_f1": 0.42745913623445536,
+      "red_recall": NaN,
+      "orange_recall": 0.3815789473684211,
+      "n_red_test": 0
+    },
+    {
+      "hazard": "Distance",
+      "accuracy": 0.994482496194825,
+      "weighted_f1": 0.9968541514848059,
+      "macro_f1": 0.49861680816560144,
+      "red_recall": NaN,
+      "orange_recall": 0.0,
+      "n_red_test": 0
+    },
+    {
+      "hazard": "Environment",
+      "accuracy": 1.0,
+      "weighted_f1": 1.0,
+      "macro_f1": 1.0,
+      "red_recall": NaN,
+      "orange_recall": NaN,
+      "n_red_test": 0
+    }
+  ],
+  "anomaly_auc": {
+    "ORANGE or RED": 0.772173687957031
+  },
+  "ablation": {
+    "without_anomaly_score": {
+      "accuracy": 0.9863013698630136,
+      "macro_f1": 0.5043824598655213
+    },
+    "with_anomaly_score": {
+      "accuracy": 0.9855403348554034,
+      "macro_f1": 0.7527408859969694
+    }
+  },
+  "leave_astronauts_out": [
+    {
+      "fold": 1,
+      "held_out": "ASTRO_001,ASTRO_006",
+      "accuracy": 0.9688356164383561,
+      "macro_f1": 0.5819176895817316
+    },
+    {
+      "fold": 2,
+      "held_out": "ASTRO_005",
+      "accuracy": 0.9650684931506849,
+      "macro_f1": 0.5772869619513721
+    },
+    {
+      "fold": 3,
+      "held_out": "ASTRO_004",
+      "accuracy": 0.9837899543378995,
+      "macro_f1": 0.7958824801147353
+    },
+    {
+      "fold": 4,
+      "held_out": "ASTRO_003",
+      "accuracy": 0.9584474885844749,
+      "macro_f1": 0.49671987307656923
+    },
+    {
+      "fold": 5,
+      "held_out": "ASTRO_002",
+      "accuracy": 0.9664383561643836,
+      "macro_f1": 0.5790678659480368
+    }
+  ]
+}
