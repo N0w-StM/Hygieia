@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Card, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useLive, useNow } from '../live.jsx';
-import { DataAge, Overline, StatusBadge } from '../components/status.jsx';
+import { DataAge, Overline, StatusBadge, needsAck } from '../components/status.jsx';
 import { AlertRow } from './AlertCentre.jsx';
 
 const HZ = [['radiation', 'Radiation'], ['isolation', 'Isolation'], ['distance', 'Distance'], ['gravity', 'Gravity'], ['environment', 'Environment']];
@@ -13,7 +13,7 @@ export default function CrewOverview({ go }) {
   const rows = crew.map((c) => ({ c, r: records[c.astronaut_id] })).filter((x) => x.r)
     .sort((a, b) => b.r.overall.level - a.r.overall.level || a.c.astronaut_id.localeCompare(b.c.astronaut_id));
   const counts = [2, 1, 0].map((l) => rows.filter((x) => x.r.overall.level === l).length);
-  const open = alerts.filter((a) => !a.acknowledged_at);
+  const open = alerts.filter(needsAck);
   const first = rows[0]?.r;
 
   return (
@@ -29,22 +29,22 @@ export default function CrewOverview({ go }) {
 
       <Card>
         <TableContainer>
-          <Table size="small" aria-label="Crew triage matrix">
+          <Table size="small" aria-label="Crew triage matrix" sx={{ '& td, & th': { whiteSpace: 'nowrap' } }}>
             <TableHead>
               <TableRow>
                 <TableCell>Crew member</TableCell>
-                <TableCell>Overall<br /><Typography component="span" variant="caption" color="text.secondary">worst hazard</Typography></TableCell>
+                <TableCell>Overall</TableCell>
                 {HZ.map(([k, l]) => <TableCell key={k}>{l}</TableCell>)}
-                <TableCell>Heart<br /><Typography component="span" variant="caption" color="text.secondary">protocol rule</Typography></TableCell>
+                <TableCell>Heart rule</TableCell>
                 <TableCell align="right">HR</TableCell>
                 <TableCell align="right">SpO₂</TableCell>
                 <TableCell align="right">Sleep</TableCell>
-                <TableCell align="right">Open alerts</TableCell>
+                <TableCell align="right">To ack</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map(({ c, r }) => {
-                const mine = alerts.filter((a) => a.astronaut_id === c.astronaut_id && (a.status === 'active' && !a.acknowledged_at));
+                const mine = alerts.filter((a) => a.astronaut_id === c.astronaut_id && needsAck(a));
                 return (
                   <TableRow key={c.astronaut_id} hover tabIndex={0} sx={{ cursor: 'pointer' }} onClick={() => go('detail', c.astronaut_id)}
                     onKeyDown={(e) => { if (e.key === 'Enter') go('detail', c.astronaut_id); }}>
@@ -67,7 +67,7 @@ export default function CrewOverview({ go }) {
         </TableContainer>
       </Card>
       <Typography variant="caption" color="text.secondary">
-        Select a row for detail. Hazard columns are model outputs for the latest 6-hour reading; "flagged for review", not a diagnosis.
+        Select a row for detail. Overall = worst of the five hazards. Hazard columns are model outputs for the latest 6-hour reading; Heart rule is a protocol check on HR, HRV and blood pressure. "Flagged for review", not a diagnosis.
       </Typography>
 
       <Card sx={{ p: 2.5 }}>

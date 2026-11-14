@@ -69,26 +69,42 @@ export function LiveProvider({ role, astronautId, children }) {
     setLoaded(false);
     load().catch(() => setConnected(false));
     const qs = new URLSearchParams(role === 'astronaut' ? { view: 'astronaut', astronaut_id: astronautId } : { view: 'doctor' });
-    const es = new EventSource(`/api/stream?${qs}`);
-    const on = (type, fn) => es.addEventListener(type, (e) => { if (!closed) fn(JSON.parse(e.data)); });
-    on('hello', (d) => {
-      setConnected(true); setReplay(d.replay); setStorage(d.storage);
-      load().catch(() => {}); // resync after a reconnect
-    });
-    on('tick', (d) => {
-      setReplay(d.replay);
-      setRecords((prev) => ({ ...prev, ...Object.fromEntries(d.records.map((r) => [r.astronaut_id, r])) }));
-      emit('tick', d);
-    });
-    on('replay', (d) => setReplay(d));
-    on('storage', (d) => setStorage(d));
-    on('alert', (a) => { upsertAlert(a); setToast({ id: a.alert_id, alert: a }); emit('alert', a); });
-    on('alert_cleared', (a) => { upsertAlert(a); emit('alert_cleared', a); });
-    on('alert_ack', (a) => { upsertAlert(a); emit('alert_ack', a); });
-    on('message', (m) => emit('message', m));
-    on('checkin', (c) => emit('checkin', c));
-    es.onerror = () => { if (!closed) setConnected(false); };
-    return () => { closed = true; es.close(); };
+    let es = null;
+    // One live stream per page. It is closed on pagehide: a page kept in the back/forward cache would
+    // otherwise hold its connection open, and browsers allow only 6 per host, so after a few reloads
+    // every other request of the app would stall.
+    const open = () => {
+      if (es) return;
+      es = new EventSource(`/api/stream?${qs}`);
+      const on = (type, fn) => es.addEventListener(type, (e) => { if (!closed) fn(JSON.parse(e.data)); });
+      on('hello', (d) => {
+        setConnected(true); setReplay(d.replay); setStorage(d.storage);
+        load().catch(() => {}); // resync after a reconnect
+      });
+      on('tick', (d) => {
+        setReplay(d.replay);
+        setRecords((prev) => ({ ...prev, ...Object.fromEntries(d.records.map((r) => [r.astronaut_id, r])) }));
+        emit('tick', d);
+      });
+      on('replay', (d) => setReplay(d));
+      on('storage', (d) => setStorage(d));
+      on('alert', (a) => { upsertAlert(a); setToast({ id: a.alert_id, alert: a }); emit('alert', a); });
+      on('alert_cleared', (a) => { upsertAlert(a); emit('alert_cleared', a); });
+      on('alert_ack', (a) => { upsertAlert(a); emit('alert_ack', a); });
+      on('message', (m) => emit('message', m));
+      on('checkin', (c) => emit('checkin', c));
+      es.onerror = () => { if (!closed) setConnected(false); };
+    };
+    const shut = () => { if (es) { es.close(); es = null; } };
+    const onShow = (e) => { if (e.persisted) open(); };
+    window.addEventListener('pagehide', shut);
+    window.addEventListener('pageshow', onShow);
+    open();
+    return () => {
+      closed = true; shut();
+      window.removeEventListener('pagehide', shut);
+      window.removeEventListener('pageshow', onShow);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role, astronautId]);
 

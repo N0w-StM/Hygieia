@@ -4,7 +4,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsReferenceLine } from '@mui/x-charts/ChartsReferenceLine';
 import { api, ago, missionClock } from '../api.js';
 import { useLive, useLiveEvent, useNow } from '../live.jsx';
-import { DataAge, Overline, StatusBadge, UI } from '../components/status.jsx';
+import { DataAge, LevelStrip, Overline, StatusBadge, UI } from '../components/status.jsx';
 import { SystemIcon } from '../components/systems.jsx';
 import { AlertRow } from './AlertCentre.jsx';
 
@@ -148,13 +148,24 @@ export default function CrewDetail({ id, go }) {
                 series={[{ data: chart.values, label: sig.label, color: hy.primary, showMark: chart.values.length <= 40, curve: 'linear', valueFormatter: (v) => (v == null ? '' : `${v} ${sig.unit}`) }]}>
                 {base != null && <ChartsReferenceLine y={base} lineStyle={{ stroke: hy.muted, strokeDasharray: '5 5' }} />}
               </LineChart>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Hazard levels over the same period{tel.resolution === 'daily' ? ' (worst of each day)' : ''} · 0 Normal, 1 Watch, 2 Critical
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+                Hazard levels over the same period{tel.resolution === 'daily' ? ' (worst reading of each day)' : ''}. Bar height: short Normal, medium Watch, tall Critical.
               </Typography>
-              <LineChart height={220} xAxis={[axis]} grid={{ horizontal: true }}
-                yAxis={[{ min: 0, max: 2, width: 72, tickInterval: [0, 1, 2], valueFormatter: (v) => UI[v] || '' }]}
-                series={HZ.map(([k, label], i) => ({ data: chart.levels[k], label, curve: 'stepAfter', showMark: false,
-                  color: [hy.primary, hy.watch, hy.text2, hy.normal, hy.critical][i], valueFormatter: (v) => UI[v] }))} />
+              <Stack spacing={1}>
+                {HZ.map(([k, label]) => {
+                  const hist = chart.levels[k].map((level) => ({ level }));
+                  const n = [1, 2].map((l) => hist.filter((h) => h.level === l).length);
+                  return (
+                    <Box key={k} sx={{ display: 'grid', gridTemplateColumns: { xs: '92px 1fr', sm: '120px 1fr 150px' }, gap: 1.5, alignItems: 'end' }}>
+                      <Typography variant="body2">{label}</Typography>
+                      <LevelStrip history={hist} hideSummary />
+                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                        {n[0] || n[1] ? `${n[0]} Watch · ${n[1]} Critical` : 'All Normal'}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Stack>
             </>
           ) : <Typography color="text.secondary">Loading trends…</Typography>}
         </CardContent>

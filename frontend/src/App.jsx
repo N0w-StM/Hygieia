@@ -17,7 +17,7 @@ import PortableWifiOffOutlined from '@mui/icons-material/PortableWifiOffOutlined
 import { THEMES, buildTheme } from './theme.js';
 import { LiveProvider, prefs, useLive, useNow } from './live.jsx';
 import { ago } from './api.js';
-import { Disclaimer, StatusBadge } from './components/status.jsx';
+import { Disclaimer, StatusBadge, needsAck } from './components/status.jsx';
 import ScenarioBar from './components/ScenarioBar.jsx';
 import MyStatus from './views/MyStatus.jsx';
 import Hazards from './views/Hazards.jsx';
@@ -240,7 +240,7 @@ function Bell({ role, subjectId, go }) {
   const mine = role === 'astronaut' ? alerts.filter((a) => a.source !== 'astronaut') : alerts;
   const count = role === 'astronaut'
     ? mine.filter((a) => a.triggered_at > seenAt).length
-    : mine.filter((a) => !a.acknowledged_at).length;
+    : mine.filter(needsAck).length;
   const open = (e) => {
     setAnchor(e.currentTarget);
     if (role === 'astronaut' && mine[0]) { prefs.set(seenKey, mine[0].triggered_at); }

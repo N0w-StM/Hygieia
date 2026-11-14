@@ -76,7 +76,7 @@ export default function Contact({ id, me }) {
         </Box>
         <Box component="form" onSubmit={send} sx={{ display: 'flex', gap: 1, p: 1.5, borderTop: 1, borderColor: 'divider' }}>
           <TextField fullWidth size="small" placeholder={`Message ${other}…`} value={text} onChange={(e) => setText(e.target.value.slice(0, 2000))}
-            inputProps={{ 'aria-label': `Message ${other}` }} />
+            slotProps={{ htmlInput: { 'aria-label': `Message ${other}` } }} />
           <Button type="submit" variant="contained" disabled={busy || !text.trim()} endIcon={<SendRounded />}>Send</Button>
         </Box>
       </Card>

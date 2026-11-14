@@ -5,6 +5,10 @@ import { useNow } from '../live.jsx';
 
 export const UI = ['Normal', 'Watch', 'Critical'];
 export const KEY = ['normal', 'watch', 'critical'];
+/** Alerts closed only because the demo replay jumped do not need anyone's attention. */
+export const replayClosed = (a) => a.status === 'cleared' && /^replay_/.test(a.cleared_reason || '');
+export const needsAck = (a) => !a.acknowledged_at && !replayClosed(a);
+
 export const DISCLAIMER = 'For monitoring and research purposes, not a medical diagnosis.';
 
 /** Status shape: check-circle (Normal), triangle (Watch), octagon (Critical). Never colour alone. */
@@ -13,7 +17,7 @@ export function LevelIcon({ level, size = 18, color }) {
   const p = { fill: 'none', stroke: color || 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
   if (level === 2) {
     return (
-      <svg viewBox="0 0 24 24" style={s} aria-hidden="true">
+      <svg viewBox="0 0 24 24" width={size} height={size} style={s} aria-hidden="true">
         <path {...p} d="M8.2 2.8h7.6l5.4 5.4v7.6l-5.4 5.4H8.2l-5.4-5.4V8.2z" />
         <path {...p} d="M12 7.5v5.5M12 16.4v.1" />
       </svg>
@@ -21,14 +25,14 @@ export function LevelIcon({ level, size = 18, color }) {
   }
   if (level === 1) {
     return (
-      <svg viewBox="0 0 24 24" style={s} aria-hidden="true">
+      <svg viewBox="0 0 24 24" width={size} height={size} style={s} aria-hidden="true">
         <path {...p} d="M12 3.5 22 20.5H2z" />
         <path {...p} d="M12 10v4.5M12 17.4v.1" />
       </svg>
     );
   }
   return (
-    <svg viewBox="0 0 24 24" style={s} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width={size} height={size} style={s} aria-hidden="true">
       <circle {...p} cx="12" cy="12" r="9.2" />
       <path {...p} d="m7.8 12.3 2.9 2.9 5.5-6" />
     </svg>
@@ -76,18 +80,18 @@ export function Overline({ children }) {
 }
 
 /** 28-reading strip (7 days). Height encodes level too, so it does not rely on colour alone. */
-export function LevelStrip({ history }) {
+export function LevelStrip({ history, hideSummary = false }) {
   const t = useTheme().hy;
   const counts = [0, 1, 2].map((l) => history.filter((h) => h.level === l).length);
   const summary = `Last ${history.length} readings: ${counts[0]} Normal, ${counts[1]} Watch, ${counts[2]} Critical`;
   return (
     <Box>
-      <Box role="img" aria-label={summary} sx={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: 22 }}>
+      <Box role="img" aria-label={summary} sx={{ display: 'flex', alignItems: 'flex-end', gap: history.length > 60 ? 0 : '2px', height: 22 }}>
         {history.map((h, i) => (
           <Box key={i} sx={{ flex: 1, borderRadius: '2px', height: [7, 14, 22][h.level], bgcolor: t[KEY[h.level]], opacity: h.level ? 1 : 0.45 }} />
         ))}
       </Box>
-      <Typography variant="caption" color="text.secondary">{summary}</Typography>
+      {!hideSummary && <Typography variant="caption" color="text.secondary">{summary}</Typography>}
     </Box>
   );
 }

@@ -79,7 +79,7 @@ export default function AiChat({ id, go }) {
         </Stack>
         <Box component="form" onSubmit={(e) => { e.preventDefault(); ask(text); }} sx={{ display: 'flex', gap: 1 }}>
           <TextField fullWidth size="small" placeholder="Ask about your health…" value={text} onChange={(e) => setText(e.target.value.slice(0, 300))}
-            inputProps={{ 'aria-label': 'Ask about your health' }} />
+            slotProps={{ htmlInput: { 'aria-label': 'Ask about your health' } }} />
           <Button type="submit" variant="contained" disabled={!text.trim()}>Ask</Button>
         </Box>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
