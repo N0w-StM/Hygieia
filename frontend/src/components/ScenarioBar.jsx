@@ -54,7 +54,7 @@ export default function ScenarioBar({ setSubjectId, bottomOffset = 0, defaultOpe
       <Collapse in={open}>
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', rowGap: 1, py: 1 }}>
           {scenarios.map((s) => (
-            <Tooltip key={s.id} title={`${s.description} Starts on day ${s.start.mission_day}.`}>
+            <Tooltip key={s.id} describeChild title={`${s.description} Starts on day ${s.start.mission_day}.`}>
               <Chip label={s.label} clickable variant={replay.scenario === s.id ? 'filled' : 'outlined'}
                 color={replay.scenario === s.id ? 'primary' : 'default'}
                 onClick={() => run(async () => { await control('jump', { scenario: s.id }); setSubjectId(s.focus_astronaut); })} />

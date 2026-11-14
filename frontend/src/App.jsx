@@ -122,7 +122,7 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
       {wide && (
         <Box component="nav" aria-label="Main" className="no-print"
-          sx={{ width: 248, flex: 'none', borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column', p: 2, gap: 0.5,
+          sx={{ width: 248, flex: 'none', borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column', p: 2, gap: 0.5, bgcolor: hy.navBg,
             position: 'sticky', top: 0, height: '100vh' }}>
           <Box component="img" src={hy.lockup} alt="Hygieia Health Monitoring" sx={{ width: 190, mb: 1, ml: -1 }} />
           <Typography variant="overline" color="text.secondary" sx={{ px: 1 }}>{role === 'astronaut' ? 'Astronaut' : 'Crew medical officer'}</Typography>
@@ -265,7 +265,7 @@ function SyncChip() {
 
 function Chipish({ icon, text, tone, tip }) {
   return (
-    <Tooltip title={tip}>
+    <Tooltip describeChild title={tip}>
       <Box role="status" sx={(t) => ({ display: 'inline-flex', alignItems: 'center', gap: 0.75, px: 1.25, py: 0.5, borderRadius: 1.5, fontSize: 13, fontWeight: 600,
         color: t.hy[tone], bgcolor: t.hy[`${tone}Bg`] })}>
         {icon}{text}

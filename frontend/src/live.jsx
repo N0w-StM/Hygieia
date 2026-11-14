@@ -70,14 +70,20 @@ export function LiveProvider({ role, astronautId, children }) {
     load().catch(() => setConnected(false));
     const qs = new URLSearchParams(role === 'astronaut' ? { view: 'astronaut', astronaut_id: astronautId } : { view: 'doctor' });
     let es = null;
+    let lastSeen = Date.now();
+    let retry = null;
+    let backoff = 1000;
     // One live stream per page. It is closed on pagehide: a page kept in the back/forward cache would
     // otherwise hold its connection open, and browsers allow only 6 per host, so after a few reloads
     // every other request of the app would stall.
     const open = () => {
       if (es) return;
+      lastSeen = Date.now();
       es = new EventSource(`/api/stream?${qs}`);
-      const on = (type, fn) => es.addEventListener(type, (e) => { if (!closed) fn(JSON.parse(e.data)); });
+      const on = (type, fn) => es.addEventListener(type, (e) => { lastSeen = Date.now(); if (!closed) fn(JSON.parse(e.data)); });
+      on('ping', () => {});
       on('hello', (d) => {
+        backoff = 1000;
         setConnected(true); setReplay(d.replay); setStorage(d.storage);
         load().catch(() => {}); // resync after a reconnect
       });
@@ -93,15 +99,32 @@ export function LiveProvider({ role, astronautId, children }) {
       on('alert_ack', (a) => { upsertAlert(a); emit('alert_ack', a); });
       on('message', (m) => emit('message', m));
       on('checkin', (c) => emit('checkin', c));
-      es.onerror = () => { if (!closed) setConnected(false); };
+      es.onerror = () => {
+        if (closed) return;
+        setConnected(false);
+        // EventSource gives up for good after an error response (e.g. the dev proxy's 502 while
+        // the backend restarts), so reconnect ourselves with backoff.
+        if (es && es.readyState === EventSource.CLOSED) reconnect();
+      };
     };
     const shut = () => { if (es) { es.close(); es = null; } };
+    const reconnect = () => {
+      shut();
+      clearTimeout(retry);
+      retry = setTimeout(() => { if (!closed) open(); }, backoff);
+      backoff = Math.min(backoff * 2, 15000);
+    };
+    // Watchdog: the backend sends a ping every 10 s. Silence means a dead stream that the browser
+    // has not noticed (a proxy can keep the socket open after the backend is gone).
+    const watchdog = setInterval(() => {
+      if (es && Date.now() - lastSeen > 25000) { setConnected(false); reconnect(); }
+    }, 5000);
     const onShow = (e) => { if (e.persisted) open(); };
     window.addEventListener('pagehide', shut);
     window.addEventListener('pageshow', onShow);
     open();
     return () => {
-      closed = true; shut();
+      closed = true; shut(); clearTimeout(retry); clearInterval(watchdog);
       window.removeEventListener('pagehide', shut);
       window.removeEventListener('pageshow', onShow);
     };

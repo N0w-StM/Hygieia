@@ -5,7 +5,7 @@ import { createTheme } from '@mui/material/styles';
 // Brand rule: never use brand blue as an alarm state; status always = word + shape + colour.
 export const THEMES = {
   deepSlate: {
-    label: 'Deep Slate', hint: 'Default', mode: 'dark', lockup: '/assets/lockup-deep-slate.svg',
+    label: 'Deep Slate', navBg: '#020617', hint: 'Default', mode: 'dark', lockup: '/assets/lockup-deep-slate.svg',
     bg: '#020617', surface: '#0B1324', surface2: '#101B31', border: '#1F2B45',
     text: '#F8FAFC', text2: '#B4BFD1', muted: '#8492AB',
     primary: '#0985FF', onPrimary: '#020617',
@@ -13,7 +13,7 @@ export const THEMES = {
     normalBg: 'rgba(74,222,128,0.12)', watchBg: 'rgba(251,146,60,0.14)', criticalBg: 'rgba(248,113,113,0.14)',
   },
   trueBlack: {
-    label: 'True Black', hint: 'Night', mode: 'dark', lockup: '/assets/lockup-true-black.svg',
+    label: 'True Black', navBg: '#000000', hint: 'Night', mode: 'dark', lockup: '/assets/lockup-true-black.svg',
     bg: '#000000', surface: '#0A0A0A', surface2: '#141414', border: '#262626',
     text: '#F5F5F5', text2: '#A3A3A3', muted: '#8A8A8A',
     primary: '#0985FF', onPrimary: '#000000',
@@ -21,7 +21,7 @@ export const THEMES = {
     normalBg: 'rgba(74,222,128,0.10)', watchBg: 'rgba(251,146,60,0.12)', criticalBg: 'rgba(248,113,113,0.12)',
   },
   paper: {
-    label: 'Paper', hint: 'Printable', mode: 'light', lockup: '/assets/lockup-paper.svg',
+    label: 'Paper', navBg: '#FFFFFF', hint: 'Printable', mode: 'light', lockup: '/assets/lockup-paper.svg',
     bg: '#F8FAFD', surface: '#FFFFFF', surface2: '#F1F5F9', border: '#E2E8F0',
     text: '#020617', text2: '#475569', muted: '#64748B',
     primary: '#1B2B85', onPrimary: '#FFFFFF',

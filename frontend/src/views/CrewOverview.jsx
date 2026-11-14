@@ -60,7 +60,7 @@ export default function CrewOverview({ go }) {
       ) : (
       <Card>
         <TableContainer>
-          <Table size="small" aria-label="Crew triage matrix" sx={{ '& td, & th': { whiteSpace: 'nowrap' } }}>
+          <Table size="small" aria-label="Crew triage matrix" sx={{ '& td, & th': { whiteSpace: 'nowrap', px: 1.25 }, '& td:first-of-type, & th:first-of-type': { pl: 2 } }}>
             <TableHead>
               <TableRow>
                 <TableCell>Crew member</TableCell>
