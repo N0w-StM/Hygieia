@@ -1,0 +1,11 @@
+# Pickles in Model/outputs were saved with scikit-learn 1.7.1: keep this pin.
+scikit-learn==1.7.1
+numpy>=2.0,<3
+pandas>=2.2
+joblib>=1.4
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pymongo>=4.8
+python-dotenv>=1.0
+pytest>=8
+httpx>=0.27
