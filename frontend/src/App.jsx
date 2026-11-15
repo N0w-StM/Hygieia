@@ -36,7 +36,7 @@ const NAV = {
     { id: 'status', label: 'My Status', short: 'Status', icon: <MonitorHeartOutlined /> },
     { id: 'hazards', label: '5 Hazards', short: 'Hazards', icon: <HubOutlined /> },
     { id: 'body', label: 'Body Preview', short: 'Body', icon: <AccessibilityNewOutlined /> },
-    { id: 'contact', label: 'Doctor', icon: <ForumOutlined /> },
+    { id: 'contact', label: 'Contact doctor', short: 'Doctor', icon: <ForumOutlined /> },
     { id: 'chat', label: 'AI Chat', short: 'Chat', icon: <SmartToyOutlined /> },
   ],
   doctor: [

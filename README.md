@@ -229,7 +229,7 @@ How the `TODO.txt` items map to the app:
 | TODO item | Where it is |
 |---|---|
 | 5 Hazards tab | "5 Hazards" in both views, model-driven |
-| Doctor contact tab (Astronaut View) | Astronaut View → "Doctor" |
+| Doctor contact tab (Astronaut View) | Astronaut View → "Contact doctor" |
 | Astronaut contact tab (Doctor View) | Doctor View → "Astronauts" |
 | Send Alert (Astronaut View) | red "Send Alert" button in the Astronaut header, on every tab and in every state; also on My Status |
 | Model Alert | alert policy above, to both views |
@@ -259,6 +259,7 @@ About 77 words, roughly 30 seconds at a normal speaking pace. The 44-minute figu
    - **Left window, "L", Astronaut:** <http://localhost:5173/?theme=deepSlate#/astronaut/status>
    - **Right window, "R", Doctor:** <http://localhost:5173/?theme=deepSlate#/doctor/overview>
 5. Check that both headers say **Offline mode**, both bell badges are empty, and the bar at the bottom reads "1 reading / 1 s". **Click through the whole script once with a stopwatch**, then stop the backend and repeat steps 1 and 2 so the Alerts page starts empty on stage.
+6. **Do not restart the backend during the demo.** The replay position lives in the backend process, so a restart jumps back to the start day and closes every active alert, and both pages show "No link" for up to about 40 seconds while they reconnect.
 
 To show **Synced** instead (with an Atlas URI in `.env`), drop the `MONGODB_URI=` prefix and change the last beat: say the data is mirrored to MongoDB Atlas and catches up after a loss of link. The rest of the script is identical.
 
