@@ -17,8 +17,9 @@ Hygieia is an offline-first health monitor for a deep-space crew. A trained mode
 4. [Running it](#running-it)
 5. [How replay and the scenario bar work](#how-replay-and-the-scenario-bar-work)
 6. [Alerts and notifications](#alerts-and-notifications)
-7. [Limitations](#limitations)
-8. [Repository layout](#repository-layout)
+7. [30-second pitch and 3-minute demo script](#30-second-pitch-and-3-minute-demo-script)
+8. [Limitations](#limitations)
+9. [Repository layout](#repository-layout)
 
 ## The five hazards
 
@@ -167,7 +168,7 @@ Open <http://localhost:5173>. The role is in the URL, so you can keep two window
 - Doctor View: <http://localhost:5173/#/doctor/overview>
 - Add `?theme=deepSlate`, `?theme=trueBlack` or `?theme=paper` before the `#` to pick a theme from the URL. The header also has a Cabin theme selector.
 
-`--timeout-graceful-shutdown 2` makes Ctrl+C exit in about 2 seconds. Without it, uvicorn waits for the browsers' open live streams and can appear to hang.
+`--timeout-graceful-shutdown 2` makes Ctrl+C exit within 2 to 3 seconds (measured with a live stream open). Without it, uvicorn waits for the browsers' open live streams and can appear to hang.
 
 **Offline on purpose.** Prefix the backend command with an empty `MONGODB_URI`; this overrides whatever `.env` holds, so the header shows **Offline mode**:
 
@@ -233,6 +234,63 @@ How the `TODO.txt` items map to the app:
 | Send Alert (Astronaut View) | My Status → "Send Alert" |
 | Model Alert | alert policy above, to both views |
 | Notifications | bell and toast in both views; Alerts page with Acknowledge for the Doctor |
+
+## 30-second pitch and 3-minute demo script
+
+### 30-second pitch
+
+> The doctor can be 44 minutes away round trip. Hygieia is an offline-first health monitor that works on board. Every six hours our model checks each astronaut against NASA's five hazards: radiation, isolation, distance, gravity and closed environments. The astronaut sees one status, Normal, Watch or Critical, and one next action. The medical officer sees the whole crew and every countermeasure. No network needed. Today it replays recorded mission data; live sensors come next.
+
+About 74 words, roughly 30 seconds at a normal speaking pace. The 44-minute figure comes from our own project brief (`Prompt.md`), not from a source in this repository: check it before you quote it as fact.
+
+### Before you go on stage
+
+1. **Stop the backend**, then clear old demo data (dry run first to see the counts; see [Running it](#running-it)):
+   ```bash
+   backend/.venv/bin/python backend/scripts/reset_data.py --local
+   backend/.venv/bin/python backend/scripts/reset_data.py --yes --local
+   ```
+2. **Start the backend paused, at 1 reading per second, offline on purpose** (the Offline-mode beat at the end depends on this):
+   ```bash
+   REPLAY_AUTOPLAY=0 REPLAY_SECONDS_PER_SLOT=1 MONGODB_URI= backend/.venv/bin/uvicorn app.main:app --app-dir backend --port 8000 --timeout-graceful-shutdown 2
+   ```
+3. **Start the frontend:** `cd frontend && npm run dev`.
+4. **Open two windows side by side**, each at least 900 px wide (a 1920 px screen split in half works; narrower windows switch to the phone/tablet layout, where the Scenarios chips start collapsed, so click **Scenarios** to open them):
+   - **Left window, "L", Astronaut:** <http://localhost:5173/?theme=deepSlate#/astronaut/status>
+   - **Right window, "R", Doctor:** <http://localhost:5173/?theme=deepSlate#/doctor/overview>
+5. Check that both headers say **Offline mode**, both bell badges are empty, and the bar at the bottom reads "1 reading / 1 s". **Click through the whole script once with a stopwatch**, then stop the backend and repeat steps 1 and 2 so the Alerts page starts empty on stage.
+
+To show **Synced** instead (with an Atlas URI in `.env`), drop the `MONGODB_URI=` prefix and change the last beat: say the data is mirrored to MongoDB Atlas and catches up after a loss of link. The rest of the script is identical.
+
+### 3-minute script
+
+All six scenario chips are in the bar at the bottom of each window; the script uses five. **Clicking a chip in L also switches L to that scenario's astronaut.** Play, Pause and Step are the buttons at the bottom left: **Play replay**, **Pause replay**, **Step one reading** (skip-next icon).
+
+| Time | Do (window: click) | Say |
+|---|---|---|
+| **0:00-0:20**<br>Nominal | L: chip **Nominal**, then nav **5 Hazards**.<br>R: stay on Crew Overview. | "Recorded mission data through our real model, no network: the badge says Offline mode. Six astronauts, all Normal. Every six hours we track fourteen measurements, from heart rate and sleep to cabin CO₂ and radiation dose, grouped into NASA's five hazards. Each card says in one line what it covers and which signals feed it." |
+| **0:20-1:00**<br>Radiation Critical, Send Alert, Acknowledge | L: chip **Radiation: Critical (one crew member)**, nav **My Status**, then **Step one reading** once. A toast appears in both windows.<br>L: click **Send Alert**, choose **I feel unwell**, click the red **Send Alert**, then **Close**.<br>R: on Crew Overview, **Priority alerts** lists the help request first; click its **Acknowledge**.<br>L: scroll to the **Need help?** card. | "One radiation reading and Space Radiation is Critical. The astronaut gets one action: go to the shielded area. Critical alerts fire at once; a Watch needs two readings in a row." (Send Alert) "If they need help, Send Alert goes straight to the medical officer." (Acknowledge) "The doctor acknowledges; the astronaut sees 'Seen by Dr. Lena Ortiz'. Acknowledging never changes the risk status. At Critical the astronaut is told to contact the flight surgeon." |
+| **1:00-1:35**<br>Cabin environment | L: chip **Cabin environment: Watch, then Critical (whole crew)**, then **Play replay**. About 5 s later My Status reads "Critical: Environment"; click **Pause replay**.<br>L: nav **Body Preview**; point at Blood.<br>R: Crew Overview, all six crew Critical. | "Cabin CO₂ rises. Hostile/Closed Environments goes Watch, then Critical, for the whole crew at once. On the body map it shows under Blood: that mapping is ours, the model itself only has the five hazards." |
+| **1:35-2:10**<br>Isolation | L: chip **Isolation: Watch, then Critical (one crew member)** (L is now Amina Diallo), nav **My Status**, then **Step one reading** three times: "Watch: Isolation" and "Plan at least 7 hours of sleep tonight."<br>L: **Play replay**; about 11 s later it reads "Critical: Isolation" and "Stop work and rest now."; click **Pause replay**. | "Days of short sleep. Two Watch readings in a row raise the alert, and the astronaut gets one protective action before anything is Critical: plan seven hours of sleep." (Play) "Left alone, it escalates to Critical and the action becomes: stop work and rest." |
+| **2:10-2:45**<br>Multiple hazards | L: chip **Multiple hazards: Distance and Isolation Critical, Gravity Watch** (L is now Kenji Sato), then **Play replay**; after about 11 s click **Pause replay**.<br>R: Crew Overview lists **Kenji Sato** first (Isolation and Distance Critical, Gravity Watch) and Lukas Berg second (Watch); click Kenji's row to open **Crew Member**; point at **Countermeasures**. | "The triage matrix puts the sickest astronaut first. Distance from Earth Critical means the crew acts on their own and logs everything for delayed uplink to Earth. The doctor sees every countermeasure, worst hazard first; the astronaut only ever sees one." |
+| **2:45-3:00**<br>Offline and themes | R: hover the **Offline mode** badge (tooltip: "Running on the local data store. No database link is configured.").<br>R: header **Cabin theme**: choose **Paper**, then **True Black**, then **Deep Slate**. | "No network, end to end. With a link it mirrors to MongoDB Atlas and catches up. Paper for a printable manifest, True Black for night shifts. Replay of recorded data, flagged for review, not a diagnosis." |
+
+**Rehearsed through the API** against this exact launch command, at 1 reading per second: the radiation segment reaches Critical one step after the jump; the cabin segment reaches Critical after about 5 s of play; isolation shows Watch after 3 steps and Critical after about 11 s more; the multi-hazard label is fully true after about 11 s. The wording on screen is quoted from that run. Narration timing is yours to rehearse.
+
+**If something goes wrong on stage:** a missed toast is still in the bell badge and on the **Alerts** page. Clicking any scenario chip again jumps back to its start, so any segment can be repeated (open model alerts are then marked cleared as "replay moved"). If the replay runs on by itself, click **Pause replay**.
+
+### How the demo answers NASA's five questions
+
+The five questions are the ones listed in `Prompt.md`. The last column says plainly what the app does *not* cover.
+
+| NASA question | Where in the demo | What the app shows | Not covered |
+|---|---|---|---|
+| 1. Which non-invasive measurements are tracked? | 0:00, 5 Hazards | 14 measurements per 6-hour reading, listed per hazard on each card (heart rate, HRV and blood pressure feed the Heart tile rule) | values come from recorded, simulated data, not sensors |
+| 2. Why is each exam needed, in plain English? | 0:00, 5 Hazards | one plain sentence per hazard on what it covers and which signals feed it; AI Chat's offline answers say what is flagged | only that one sentence per hazard: no per-measurement explanation of why an exam is needed, and no step-by-step self-exam instructions |
+| 3. How do spaceflight hazards drive the changes? | 0:20 radiation, 1:00 cabin | a hazard rises, its history strip, the body-system tile and the overall status change with it | Muscles and Bones are only a proxy of the Gravity hazard |
+| 4. When to escalate to the Crew Medical Officer or Earth? | 0:20 Send Alert and Acknowledge, 2:10 Distance | Critical alerts at once, Watch after 2 readings, "Contact flight surgeon" at Critical, Send Alert; the Distance catalog says to act autonomously and log for delayed uplink | no Earth-downlink packet or delay simulation is built |
+| 5. Which preventive countermeasures stop it turning Critical? | 1:35 Isolation Watch, 2:10 Doctor's list | one protective action at Watch, before Critical; the doctor sees all catalog countermeasures | plain-language wording is a demo draft that mission clinicians must validate |
+
 
 ## Limitations
 
