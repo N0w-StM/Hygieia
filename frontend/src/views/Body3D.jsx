@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Color, Vector3 } from 'three';
 import { Box } from '@mui/material';
@@ -41,6 +41,8 @@ function Figure({ colors, neutral, sel, onPick, rot, reduced, labels, lines }) {
   const ring = useRef();
   const { camera, size } = useThree();
   const v = useMemo(() => new Vector3(), []);
+  // Narrow canvas (phone): move the camera back so the side labels do not cover the figure.
+  useEffect(() => { camera.position.z = size.width < 480 ? 8.6 : 6.4; camera.updateProjectionMatrix(); }, [camera, size.width]);
 
   useFrame((_, dt) => {
     if (!group.current) return;
