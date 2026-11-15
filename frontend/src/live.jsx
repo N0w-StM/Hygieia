@@ -50,7 +50,7 @@ export function LiveProvider({ role, astronautId, children }) {
   const load = useCallback(async () => {
     const audience = role;
     const [c, al, rp] = await Promise.all([
-      api.get('/crew', { view: role }),
+      api.get('/crew', role === 'astronaut' ? { view: role, astronaut_id: astronautId } : { view: role }),
       api.get('/alerts', { audience, astronaut_id: role === 'astronaut' ? astronautId : null, limit: 200 }),
       api.get('/replay'),
     ]);

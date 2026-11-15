@@ -54,7 +54,7 @@ def test_crew_is_seeded_from_dataset(client):
 def test_astronaut_view_hides_clinical_detail(client):
     jump(client, mission_day=401, sample_id=3)
     for url in ("/api/telemetry/ASTRO_001", "/api/hazards/ASTRO_001", "/api/crew"):
-        text = client.get(url, params={"view": "astronaut"}).text
+        text = client.get(url, params={"view": "astronaut", "astronaut_id": "ASTRO_001"}).text
         for banned in ("anomaly", "unusual_signals", "model_overall", "diagnostics", "countermeasures",
                        "dataset_flags", "proba", "confidence"):
             assert banned not in text, (url, banned)
@@ -63,6 +63,27 @@ def test_astronaut_view_hides_clinical_detail(client):
     assert isinstance(latest["astronaut_summary"]["next_action"]["text"], str)  # exactly one action
     doc = client.get("/api/telemetry/ASTRO_001").json()["latest"]
     assert len(doc["countermeasures"]) == 3 and "score" in doc["anomaly"]
+
+
+def test_astronaut_crew_view_shows_only_own_record(client):
+    body = client.get("/api/crew", params={"view": "astronaut", "astronaut_id": "ASTRO_003"}).json()
+    by_id = {c["astronaut_id"]: c for c in body["crew"]}
+    assert list(by_id) == [f"ASTRO_00{i}" for i in range(1, 7)]
+    me = by_id.pop("ASTRO_003")
+    assert me["name"] == "Priya Nair" and "baseline" in me and me["latest"]["astronaut_id"] == "ASTRO_003"
+    assert "open_alerts" in me and "astronaut_summary" in me["latest"]
+    for other in by_id.values():
+        assert set(other) == {"astronaut_id", "name", "role"}, other
+    assert body["doctor"]["name"] == "Dr. Lena Ortiz"
+    text = client.get("/api/crew", params={"view": "astronaut", "astronaut_id": "ASTRO_003"}).text
+    assert "ASTRO_001" in text and text.count('"baseline"') == 1 and text.count('"latest"') == 1
+
+
+def test_astronaut_crew_view_requires_known_astronaut(client):
+    assert client.get("/api/crew", params={"view": "astronaut"}).status_code == 422
+    assert client.get("/api/crew", params={"view": "astronaut", "astronaut_id": "NOPE"}).status_code == 404
+    doc = client.get("/api/crew").json()["crew"]  # doctor view unchanged: everyone in full
+    assert all("baseline" in c and "latest" in c for c in doc)
 
 
 def test_telemetry_ranges(client):

@@ -149,13 +149,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # ---- crew -------------------------------------------------------------------------
     @app.get("/api/crew")
-    def crew(request: Request, view: View = "doctor"):
+    def crew(request: Request, view: View = "doctor", astronaut_id: str | None = None):
+        """Doctor: every crew record. Astronaut: only their own record in full; for the others just
+        the id, name and role (the "signed in as" picker and the contact tab need no more)."""
         model, repo, engine = ctx(request)
+        if view == "astronaut":
+            if not astronaut_id:
+                raise HTTPException(422, "astronaut_id is required for view=astronaut")
+            need_astronaut(model, astronaut_id)
         active = repo.find("alerts", lambda d: d["status"] == "active" or
                            (d["source"] == "astronaut" and not d["acknowledged_at"]))
         out = []
         for doc in sorted(repo.find("crew"), key=lambda d: d["astronaut_id"]):
             a = doc["astronaut_id"]
+            if view == "astronaut" and a != astronaut_id:
+                out.append({"astronaut_id": a, "name": doc["name"], "role": doc["role"]})
+                continue
             rec = engine.latest.get(a)
             mine = [x for x in active if x["astronaut_id"] == a]
             doc["latest"] = shape(rec, view) if rec else None

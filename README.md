@@ -94,7 +94,7 @@ Each hazard has three suggested actions per level in the catalog. The **Doctor V
 | Endpoint | Purpose |
 |---|---|
 | `GET /health` | status, storage mode, replay state, disclaimer |
-| `GET /crew` | crew, baselines, latest record, open alerts |
+| `GET /crew` | Doctor: crew, baselines, latest record, open alerts. `view=astronaut&astronaut_id=X`: X's own full record, and only id, name and role for the others |
 | `GET /telemetry/{astronaut_id}?range=24h\|7d\|30d\|mission` | time series and latest record |
 | `GET /hazards/{astronaut_id}` | the five hazards (5 Hazards tab) |
 | `GET /replay`, `POST /replay/{play\|pause\|step\|speed\|jump}` | replay state and controls |
@@ -322,7 +322,7 @@ The test period contained **no RED rows at all**, so Critical detection has neve
 
 **Crew names are samples.** The dataset only has IDs (`ASTRO_001` to `ASTRO_006`) and baselines. Names and roles are illustrative; Alex Morgan and Dr. Lena Ortiz come from the design PDFs. The crew records say `sample_profile: true`.
 
-**No accounts or login.** The Astronaut / Doctor toggle and the "signed in as" picker are UI controls, and acknowledgements are recorded under the Crew Medical Officer's name. Anyone who can open the page can use either view. There is no Earth-downlink packet, communication-delay simulation or voice cue.
+**No authentication.** There are no accounts, logins or access checks on the API. The Astronaut / Doctor toggle and the "signed in as" picker are demo controls, not security: anyone who can open the page, or call the API, can use either view and any astronaut. Acknowledgements are recorded under the Crew Medical Officer's name. The Astronaut View asks `GET /crew` only for its own full record (others: name and role), but without authentication this limits what the page shows, not who can read the data. There is no Earth-downlink packet, communication-delay simulation or voice cue.
 
 **Prototype engineering limits.** Single backend instance only (not designed for several backends sharing one database). CORS and the dev proxy assume `localhost:5173`; there is no production deployment setup. After the backend dies, the page can take up to roughly 40 seconds to show "No link". Tested in Chromium-based browsers (Chrome, Brave) only, not Firefox or Safari, and not audited with assistive technology.
 
