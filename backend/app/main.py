@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from . import chat as chat_ai
 from .config import Settings
 from .events import EventBus
 from .model_service import HAZARDS, UI_LABEL, get_model_service, iso_ts, level_obj
@@ -75,6 +76,17 @@ class MessageBody(BaseModel):
     astronaut_id: str
     sender: Literal["astronaut", "doctor"]
     text: str = Field(..., min_length=1, max_length=2000)
+
+
+class ChatTurn(BaseModel):
+    role: Literal["user", "model"]
+    text: str = Field(..., min_length=1, max_length=2000)
+
+
+class ChatBody(BaseModel):
+    astronaut_id: str
+    message: str = Field(..., min_length=1, max_length=1000)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=12)
 
 
 class CheckinBody(BaseModel):
@@ -345,6 +357,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         repo.upsert("messages", msg["message_id"], msg)
         engine.bus.publish("message", msg)
         return msg
+
+    # ---- AI chat ----------------------------------------------------------------------
+    @app.post("/api/chat")
+    def ai_chat(request: Request, body: ChatBody):
+        """Live answer from Gemini about the asking astronaut's own data, or mode=offline so the page
+        uses its offline demo answers. Never returns the key, the prompt or the raw context."""
+        model, _, engine = ctx(request)
+        need_astronaut(model, body.astronaut_id)
+        offline = lambda reason: {"mode": "offline", "label": "Offline demo answers", "reason": reason}  # noqa: E731
+        rec = engine.latest.get(body.astronaut_id)
+        if not rec:
+            return offline("no_reading")
+        context = chat_ai.build_health_context(
+            rec, model.baseline(body.astronaut_id), model.window(body.astronaut_id, engine.slot - 27, engine.slot))
+        try:
+            text = chat_ai.ask_gemini(settings.gemini_api_key, settings.gemini_model, settings.gemini_timeout, context,
+                                      body.message.strip(), [t.model_dump() for t in body.history])
+        except chat_ai.ChatUnavailable as e:
+            log.warning("AI chat: live model unavailable (%s); using offline demo answers", e.reason)
+            return offline(e.reason)
+        return {"mode": "live", "label": "Live AI (Gemini)", "model": settings.gemini_model, "answer": text}
 
     # ---- check-ins --------------------------------------------------------------------
     @app.get("/api/checkin")
