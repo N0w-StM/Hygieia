@@ -42,6 +42,7 @@ const NAV = {
   doctor: [
     { id: 'overview', label: 'Crew Overview', short: 'Crew', icon: <GridViewOutlined /> },
     { id: 'detail', label: 'Crew Member', short: 'Member', icon: <PersonSearchOutlined /> },
+    { id: 'body', label: 'Body Preview', short: 'Body', icon: <AccessibilityNewOutlined /> },
     { id: 'hazards', label: '5 Hazards', short: 'Hazards', icon: <HubOutlined /> },
     { id: 'alerts', label: 'Alerts', icon: <NotificationsNoneOutlined /> },
     { id: 'contact', label: 'Astronauts', short: 'Contact', icon: <ForumOutlined /> },
@@ -117,12 +118,13 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
     page = {
       overview: <CrewOverview go={go} />,
       detail: <CrewDetail id={subjectId} go={go} />,
+      body: <BodyPreview id={subjectId} go={go} view="doctor" />,
       hazards: <Hazards id={subjectId} view="doctor" />,
       alerts: <AlertCentre go={go} />,
       contact: <Contact id={subjectId} me="doctor" />,
     }[tab];
   }
-  const showPicker = role === 'astronaut' || ['detail', 'hazards', 'contact'].includes(tab);
+  const showPicker = role === 'astronaut' || ['detail', 'body', 'hazards', 'contact'].includes(tab);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
