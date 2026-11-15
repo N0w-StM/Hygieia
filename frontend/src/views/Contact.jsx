@@ -51,7 +51,7 @@ export default function Contact({ id, me }) {
           {me === 'doctor' && rec && <StatusBadge level={rec.overall.level} />}
         </Stack>
         <Typography variant="body2" color="text.secondary">
-          {me === 'astronaut' ? `${doctor.role}. For urgent help use Send Alert on My Status.` : 'Messages are stored with the mission record.'}
+          {me === 'astronaut' ? `${doctor.role}. For urgent help use Send Alert at the top of the screen.` : 'Messages are stored with the mission record.'}
           {storage?.offline ? ' Saved on this device (offline mode).' : ''}
         </Typography>
       </Box>

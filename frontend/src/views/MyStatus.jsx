@@ -111,7 +111,7 @@ function ActionCard({ level, text, go }) {
 
 const QUICK = ['I feel unwell', 'I am short of breath', 'I am in pain', 'I need to talk'];
 
-function SendAlertDialog({ open, onClose, id, doctorName }) {
+export function SendAlertDialog({ open, onClose, id, doctorName }) {
   const { upsertAlert } = useLive();
   const [text, setText] = useState('');
   const [state, setState] = useState({ busy: false, error: '', sent: false });

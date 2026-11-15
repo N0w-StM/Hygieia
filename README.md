@@ -231,7 +231,7 @@ How the `TODO.txt` items map to the app:
 | 5 Hazards tab | "5 Hazards" in both views, model-driven |
 | Doctor contact tab (Astronaut View) | Astronaut View → "Doctor" |
 | Astronaut contact tab (Doctor View) | Doctor View → "Astronauts" |
-| Send Alert (Astronaut View) | My Status → "Send Alert" |
+| Send Alert (Astronaut View) | red "Send Alert" button in the Astronaut header, on every tab and in every state; also on My Status |
 | Model Alert | alert policy above, to both views |
 | Notifications | bell and toast in both views; Alerts page with Acknowledge for the Doctor |
 

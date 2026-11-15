@@ -15,12 +15,13 @@ import CloudDoneOutlined from '@mui/icons-material/CloudDoneOutlined';
 import CloudOffOutlined from '@mui/icons-material/CloudOffOutlined';
 import PortableWifiOffOutlined from '@mui/icons-material/PortableWifiOffOutlined';
 import TuneOutlined from '@mui/icons-material/TuneOutlined';
+import CampaignOutlined from '@mui/icons-material/CampaignOutlined';
 import { THEMES, buildTheme } from './theme.js';
 import { LiveProvider, prefs, useLive, useNow } from './live.jsx';
 import { ago } from './api.js';
 import { Disclaimer, StatusBadge, needsAck } from './components/status.jsx';
 import ScenarioBar from './components/ScenarioBar.jsx';
-import MyStatus from './views/MyStatus.jsx';
+import MyStatus, { SendAlertDialog } from './views/MyStatus.jsx';
 import Hazards from './views/Hazards.jsx';
 import BodyPreview from './views/BodyPreview.jsx';
 import Contact from './views/Contact.jsx';
@@ -181,7 +182,7 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
               return (
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
                   <Typography variant="h3" component="h1" sx={{ mr: 'auto' }}>{title}</Typography>
-                  {picker}{met}<SyncChip /><Bell role={role} subjectId={subjectId} go={go} />{roleSwitch}{themeSelect}
+                  {picker}{met}<SyncChip />{role === 'astronaut' && <HeaderSendAlert id={subjectId} />}<Bell role={role} subjectId={subjectId} go={go} />{roleSwitch}{themeSelect}
                 </Stack>
               );
             }
@@ -190,6 +191,7 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                   <Box component="img" src="/assets/emblem.svg" alt="Hygieia" sx={{ width: 28, height: 28 }} />
                   <Typography variant="h3" component="h1" noWrap sx={{ mr: 'auto', fontSize: 20, minWidth: 0 }}>{title}</Typography>
+                  {role === 'astronaut' && <HeaderSendAlert id={subjectId} compact />}
                   <Bell role={role} subjectId={subjectId} go={go} />
                   <SettingsMenu>{roleSwitch}{themeSelect}</SettingsMenu>
                 </Stack>
@@ -226,6 +228,21 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
       <AlertToast role={role} />
       <MessageToast role={role} toast={msgs.toast} onClose={msgs.clearToast} onOpen={(id) => { msgs.clearToast(); go('contact', role === 'doctor' ? id : null); }} />
     </Box>
+  );
+}
+
+/** Send Alert in the astronaut header: one tap away on every tab and in every state, Critical included. */
+function HeaderSendAlert({ id, compact }) {
+  const { doctor } = useLive();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="contained" color="error" size={compact ? 'small' : 'medium'} startIcon={<CampaignOutlined />} onClick={() => setOpen(true)}
+        sx={{ flex: 'none', whiteSpace: 'nowrap' }}>
+        Send Alert
+      </Button>
+      <SendAlertDialog open={open} onClose={() => setOpen(false)} id={id} doctorName={doctor.name} />
+    </>
   );
 }
 
