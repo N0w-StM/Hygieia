@@ -70,7 +70,7 @@ Each hazard has three suggested actions per level in the catalog. The **Doctor V
 | Tile | Status comes from |
 |---|---|
 | Brain | model `isolation` |
-| Heart & Blood Vessels | a small rule engine on heart rate, HRV and blood pressure (placeholder thresholds, see [Limitations](#limitations)) |
+| Heart & Blood Vessels | a small rule engine on heart rate, HRV and blood pressure (placeholder thresholds) |
 | Blood | model `environment` or the SpO₂ rule, whichever is worse |
 | Radiation | model `radiation` |
 | Muscles, Bones | model `gravity`, as a labelled proxy only |
