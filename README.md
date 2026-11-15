@@ -85,7 +85,7 @@ Each hazard has three suggested actions per level in the catalog. The **Doctor V
 | `backend/app/rules.py` | Heart & SpO₂ rule engine and the body-system mapping. |
 | `backend/app/repository.py` | Storage. Every write goes to a **local JSON store first**, so the app works with no network. When MongoDB Atlas is reachable, writes are mirrored there and small collections are loaded from it at startup. If Atlas drops, the app keeps running locally, queues what it could not mirror, and pushes it when the link returns. |
 | `backend/app/main.py` | The REST API and the live event stream (below). |
-| `frontend/` | React + MUI + MUI X Charts, built with Vite. One app, two role views, three cabin themes, status components that use word + shape + colour, a data-age indicator ("Updated 2 min ago"), an Offline-mode indicator, and the disclaimer on every screen. |
+| `frontend/` | React + MUI + MUI X Charts, built with Vite; three.js + @react-three/fiber for the Body Preview figure (lazy-loaded). One app, two role views, three cabin themes, status components that use word + shape + colour, a data-age indicator ("Updated 2 min ago"), an Offline-mode indicator, and the disclaimer on every screen. |
 
 **Live updates.** The backend pushes events over Server-Sent Events at `GET /api/stream`: `tick` (a new reading was scored), `replay`, `storage`, `alert`, `alert_cleared`, `alert_ack`, `message`, `checkin`, and a `ping` heartbeat every 10 s. The Astronaut stream is filtered server-side to that astronaut and carries no clinical detail. The page reconnects by itself if the stream goes quiet.
 
@@ -319,7 +319,7 @@ The test period contained **no RED rows at all**, so Critical detection has neve
 
 **AI Chat is canned.** It is labelled **"Offline demo answers"**: fixed templates filled from the astronaut's latest reading. No language model runs. Ollama appears in `Tech_Stack.png` but is not integrated.
 
-**The body preview is 2D.** A schematic SVG figure plus an equivalent list, instead of a 3D model. Phaser (also in `Tech_Stack.png`) is not used.
+**The body preview is a simple 3D figure, with a 2D fallback.** Body Preview (both views: the astronaut's own record, or the Doctor's selected crew member) shows a 3D figure built from primitive shapes with three.js and @react-three/fiber: drag to turn it, click a region to open its details. Regions follow `Model/README.md` section 6.2 (Brain = Isolation; Heart & Blood Vessels = rule engine; Blood = Environment plus the SpO₂ rule; Muscles and Bones follow the Gravity hazard as a labelled proxy; Radiation = a ring around the body). Each region is coloured by status and has an HTML label with the word and shape. It is not an anatomical model. It uses no model files, fonts or environment maps, so it works offline, and three.js is loaded only when the tab opens. **If WebGL is unavailable or the 3D view fails, the page shows the schematic SVG figure instead.** The list next to it is the keyboard and screen-reader path. With reduced motion requested, the ring does not spin. Phaser (also in `Tech_Stack.png`) is not used.
 
 **Crew names are samples.** The dataset only has IDs (`ASTRO_001` to `ASTRO_006`) and baselines. Names and roles are illustrative; Alex Morgan and Dr. Lena Ortiz come from the design PDFs. The crew records say `sample_profile: true`.
 
@@ -330,7 +330,7 @@ The test period contained **no RED rows at all**, so Critical detection has neve
 **Deliberate differences from the design PDFs** (`Heigieia_astro_view.pdf`, `Heygenia_Doc_View.pdf`):
 
 - The PDFs are light-only. **Paper** is the light theme closest to them; **Deep Slate** (default) and **True Black** are dark themes from the brand sheet.
-- "3D Preview" is a 2D figure called **Body Preview**, with no Skin/Skeleton toggle or rotate/zoom controls.
+- "3D Preview" is called **Body Preview**: a simple primitive-shape 3D figure you can drag to turn, with no Skin/Skeleton toggle and no zoom.
 - Astronaut AI Chat: the PDFs show five states (empty, active, critical, error, offline). Built: empty, active (canned answers) and the Critical banner. Not built: the error/retry state and a separate offline state; the answers are always labelled offline demo answers.
 - Doctor Overview: **no overall health score (84/100)**. The model does not produce one and we did not invent one; the page shows the worst-hazard status and counts instead. No System balance radar and no Recent events panel; the Settings and Help links are not built.
 - Doctor per-system pages (Heart, Brain, Blood, Muscles, Radiation, Bones) with lab-style values such as hemoglobin or bone density are replaced by **one Crew Member page**: six system tiles, countermeasures, model context and trends. Those lab values are not model inputs or outputs (`Model/README.md` section 9) and we have no data for them.
