@@ -4,7 +4,7 @@ import { api, ago, missionClock } from '../api.js';
 import { useLive, useNow } from '../live.jsx';
 import { Overline, StatusBadge, needsAck, replayClosed } from '../components/status.jsx';
 
-const SOURCE = { model: 'Model alert', rule: 'Protocol rule', astronaut: 'Sent by astronaut' };
+const SOURCE = { model: 'Model alert', rule: 'Rule engine (demo thresholds)', astronaut: 'Sent by astronaut' };
 const levelOf = (a) => (a.level === 'RED' ? 2 : a.level === 'ORANGE' ? 1 : null);
 
 export function AlertRow({ alert: a, now, compact = false, canAck = false, go }) {

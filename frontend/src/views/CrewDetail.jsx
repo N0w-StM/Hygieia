@@ -12,7 +12,7 @@ const METRICS = ['heart_rate', 'hrv_rmssd', 'sbp', 'dbp', 'spo2', 'core_temp', '
   'co2_mmhg', 'radiation_msv', 'sans_trt_um', 'vo2max', 'fluid_intake_ml'];
 const BASELINE = { heart_rate: 'baseline_hr', hrv_rmssd: 'baseline_hrv_rmssd', sbp: 'baseline_sbp', dbp: 'baseline_dbp', spo2: 'baseline_spo2' };
 const HZ = [['radiation', 'Radiation'], ['isolation', 'Isolation'], ['distance', 'Distance'], ['gravity', 'Gravity'], ['environment', 'Environment']];
-const SOURCE = { 'model:isolation': 'Model: Isolation', 'rule:heart': 'Protocol rule', 'model:environment+rule:spo2': 'Model: Environment + SpO₂ rule',
+const SOURCE = { 'model:isolation': 'Model: Isolation', 'rule:heart': 'Rule engine (placeholder demo thresholds)', 'model:environment+rule:spo2': 'Model: Environment + SpO₂ rule (demo threshold)',
   'model:gravity': 'Model: Gravity (proxy)', 'model:radiation': 'Model: Radiation' };
 const FLAGS = { spe_event: 'solar particle event', illness_flag: 'illness', sleep_deprived: 'sleep deprivation', co2_spike: 'CO₂ spike' };
 

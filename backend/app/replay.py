@@ -37,8 +37,9 @@ SCENARIOS = [
         "start": {"mission_day": 69, "sample_id": 2}, "span_slots": 14, "expect": {"radiation": 1},
     },
     {
-        "id": "radiation_critical", "label": "Radiation: Critical (one crew member)", "focus_astronaut": "ASTRO_001",
-        "description": "The model flags Space Radiation at Critical for four consecutive readings.",
+        "id": "radiation_critical", "label": "Radiation: Critical (one crew member at a time)", "focus_astronaut": "ASTRO_001",
+        "description": "The model flags Space Radiation at Critical for four consecutive readings for one crew member; "
+                       "a second crew member follows a few readings later.",
         "start": {"mission_day": 601, "sample_id": 0}, "span_slots": 10, "expect": {"radiation": 2},
     },
     {

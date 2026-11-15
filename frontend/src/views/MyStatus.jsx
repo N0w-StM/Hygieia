@@ -52,7 +52,7 @@ export default function MyStatus({ id, go }) {
                   <SystemIcon k={s.key} />
                   <Typography variant="h5" color="text.primary">{s.name}</Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary">{s.metric.label}</Typography>
+                <Typography variant="caption" color="text.secondary">{s.metric.label}{s.proxy ? ' · status follows the Gravity hazard' : ''}</Typography>
                 <Typography sx={{ fontFamily: '"Manrope", sans-serif', fontWeight: 600, fontSize: 26, mb: 1.5 }}>{s.metric.value}</Typography>
                 <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                   <StatusBadge level={s.level} size="small" />

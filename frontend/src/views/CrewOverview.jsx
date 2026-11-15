@@ -101,7 +101,7 @@ export default function CrewOverview({ go }) {
       </Card>
       )}
       <Typography variant="caption" color="text.secondary">
-        Select a row for detail. Overall = worst of the five hazards. Hazard columns are model outputs for the latest 6-hour reading; Heart rule is a protocol check on HR, HRV and blood pressure. “Flagged for review”, not a diagnosis.
+        Select a row for detail. Overall = worst of the five hazards. Hazard columns are model outputs for the latest 6-hour reading; Heart rule is a check on HR, HRV and blood pressure that uses placeholder demo thresholds, not a validated medical protocol. “Flagged for review”, not a diagnosis.
       </Typography>
 
       <Card sx={{ p: 2.5 }}>
