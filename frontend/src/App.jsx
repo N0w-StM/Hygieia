@@ -28,6 +28,7 @@ import AiChat from './views/AiChat.jsx';
 import CrewOverview from './views/CrewOverview.jsx';
 import CrewDetail from './views/CrewDetail.jsx';
 import AlertCentre, { AlertRow } from './views/AlertCentre.jsx';
+import { MessageToast, useUnreadMessages } from './messages.jsx';
 
 const NAV = {
   astronaut: [
@@ -96,6 +97,10 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
   const title = nav.find((n) => n.id === tab)?.label;
   const record = live.records[subjectId];
   const go = (t, id) => { if (id) setSubjectId(id); setTab(t); };
+  const msgs = useUnreadMessages(role, subjectId, tab === 'contact' ? subjectId : null);
+  const navIcon = (n) => (n.id === 'contact' && msgs.total
+    ? <Badge badgeContent={msgs.total} color="error" max={99} aria-label={`${msgs.total} unread`}>{n.icon}</Badge>
+    : n.icon);
 
   let page = null;
   if (!live.loaded && !live.connected) page = <Connecting />;
@@ -127,7 +132,7 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
           <Box component="img" src={hy.lockup} alt="Hygieia Health Monitoring" sx={{ width: 190, mb: 1, ml: -1 }} />
           <Typography variant="overline" color="text.secondary" sx={{ px: 1 }}>{role === 'astronaut' ? 'Astronaut' : 'Crew medical officer'}</Typography>
           {nav.map((n) => (
-            <Button key={n.id} onClick={() => setTab(n.id)} startIcon={n.icon} aria-current={tab === n.id ? 'page' : undefined}
+            <Button key={n.id} onClick={() => setTab(n.id)} startIcon={navIcon(n)} aria-current={tab === n.id ? 'page' : undefined}
               variant={tab === n.id ? 'contained' : 'text'} color={tab === n.id ? 'primary' : 'inherit'}
               sx={{ justifyContent: 'flex-start', px: 2, py: 1.25, color: tab === n.id ? undefined : 'text.secondary' }}>
               {n.label}
@@ -149,7 +154,11 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
             const picker = showPicker && (
               <Select size="small" value={live.crew.length ? subjectId : ''} onChange={(e) => setSubjectId(e.target.value)}
                 inputProps={{ 'aria-label': role === 'astronaut' ? 'Signed in as' : 'Crew member' }} sx={{ minWidth: { xs: 0, md: 150 }, maxWidth: { xs: 170, md: 'none' } }}>
-                {live.crew.map((c) => <MenuItem key={c.astronaut_id} value={c.astronaut_id}>{c.name}</MenuItem>)}
+                {live.crew.map((c) => (
+                  <MenuItem key={c.astronaut_id} value={c.astronaut_id}>
+                    {c.name}{role === 'doctor' && msgs.unread[c.astronaut_id] ? ` · ${msgs.unread[c.astronaut_id]} new` : ''}
+                  </MenuItem>
+                ))}
               </Select>
             );
             const met = (
@@ -210,11 +219,12 @@ function Shell({ role, switchRole, tab, setTab, subjectId, setSubjectId, themeKe
         {!wide && (
           <BottomNavigation className="no-print" showLabels value={tab} onChange={(_, v) => setTab(v)}
             sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, borderTop: 1, borderColor: 'divider', zIndex: 20, bgcolor: 'background.paper' }}>
-            {nav.map((n) => <BottomNavigationAction key={n.id} value={n.id} label={n.short || n.label} aria-label={n.label} icon={n.icon} sx={{ minWidth: 0, px: 0.5, '& .MuiBottomNavigationAction-label': { whiteSpace: 'nowrap', fontSize: 12 } }} />)}
+            {nav.map((n) => <BottomNavigationAction key={n.id} value={n.id} label={n.short || n.label} aria-label={n.label} icon={navIcon(n)} sx={{ minWidth: 0, px: 0.5, '& .MuiBottomNavigationAction-label': { whiteSpace: 'nowrap', fontSize: 12 } }} />)}
           </BottomNavigation>
         )}
       </Box>
       <AlertToast role={role} />
+      <MessageToast role={role} toast={msgs.toast} onClose={msgs.clearToast} onOpen={(id) => { msgs.clearToast(); go('contact', role === 'doctor' ? id : null); }} />
     </Box>
   );
 }
